@@ -1,4 +1,4 @@
-package com.team9410.lib.subsystem;
+package frc.team9410.lib.subsystem;
 
 public class ControlledSubsystem extends BaseSubsystem {
 

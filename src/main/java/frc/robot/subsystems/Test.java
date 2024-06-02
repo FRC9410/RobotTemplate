@@ -1,6 +1,6 @@
-package com.robot.subsystems;
+package frc.robot.subsystems;
 
-import com.team9410.lib.subsystem.BaseSubsystem;
+import frc.team9410.lib.subsystem.BaseSubsystem;
 
 public class Test extends BaseSubsystem {
   /** Creates a new Test. */

@@ -1,4 +1,4 @@
-package com.team9410.lib.subsystem;
+package frc.team9410.lib.subsystem;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
