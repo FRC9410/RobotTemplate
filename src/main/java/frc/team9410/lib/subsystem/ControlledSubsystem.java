@@ -1,6 +1,8 @@
 package frc.team9410.lib.subsystem;
-import com.revrobotics.SparkPIDController;
+
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 
 public class ControlledSubsystem extends BaseSubsystem {
     private SparkPIDController pidController;
