@@ -1,6 +1,14 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+
 import frc.robot.TunerConstants;
+import frc.robot.utils.Utility;
+
+import java.util.Map;
 
 /** Add your docs here. */
 public class Subsystems {
@@ -39,5 +47,31 @@ public class Subsystems {
         return test;
     }
 
-    // add idle modes
+    public void setDisabledIdleMode() {
+
+    }
+
+    public void setEnabledIdleMode() {
+
+    }
+
+    public void updatePosition(PeriodType periodType) {
+        String allianceColor = periodType == PeriodType.AUTO || Utility.getAllianceColor() == "blue" ? "blue" : "red";
+        Map<String, Object> poseWitTimeEstimate = vision.getPoseEstimate(allianceColor);
+        if (poseWitTimeEstimate != null) {
+            Pose3d pose = (Pose3d) poseWitTimeEstimate.get("pose");
+            Pose2d newPose = pose.toPose2d();
+            newPose.rotateBy(Rotation2d.fromDegrees(180));
+            drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+            drivetrain.addVisionMeasurement(
+                newPose,
+                (double) poseWitTimeEstimate.get("timestamp")
+            );
+            drivetrain.seedFieldRelative(newPose);
+        }
+    }
+
+    public enum PeriodType {
+        AUTO, TELEOP
+    }
 }

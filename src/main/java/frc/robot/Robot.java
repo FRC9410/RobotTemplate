@@ -1,9 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -12,8 +8,8 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import frc.robot.subsystems.Subsystems.PeriodType;
 import frc.robot.subsystems.Vision.VisionType;
-import frc.robot.utils.LimelightHelpers;
 import frc.robot.utils.Utility;
 
 public class Robot extends TimedRobot {
@@ -24,14 +20,6 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     LiveWindow.disableAllTelemetry();
     robotContainer = new RobotContainer();
-    
-    var alliance = Utility.getAllianceColor();
-    if (alliance == "red") {
-      robotContainer.getSubsystems().getVision().setPipeline(VisionType.TARGET, 1);
-    }
-    else {
-      robotContainer.getSubsystems().getVision().setPipeline(VisionType.TARGET, 2);
-    }
   }
 
   @Override
@@ -49,7 +37,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    // robotContainer.setDisabledIdleMode();
+    robotContainer.getSubsystems().setDisabledIdleMode();
   }
 
   @Override
@@ -58,7 +46,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledExit() {
-    // robotContainer.setEnabledIdleMode();
+    robotContainer.getSubsystems().setEnabledIdleMode();
   }
 
   @Override
@@ -73,18 +61,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiRed("limelight-back");
-    Pose3d pose = LimelightHelpers.getBotPose3d_wpiBlue("limelight-back");
-    if (limelightMeasurement.tagCount >= 2 && limelightMeasurement.avgTagArea > 0.2) {
-      Pose2d newPose = pose.toPose2d();
-      newPose.rotateBy(Rotation2d.fromDegrees(180));
-      robotContainer.getSubsystems().getDrivetrain().setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-      robotContainer.getSubsystems().getDrivetrain().addVisionMeasurement(
-        newPose,
-        limelightMeasurement.timestampSeconds
-      );
-      robotContainer.getSubsystems().getDrivetrain().seedFieldRelative(newPose);
-    } 
+    robotContainer.getSubsystems().updatePosition(PeriodType.AUTO);
   }
 
   @Override
@@ -107,21 +84,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiRed("limelight-back");
-    Pose3d pose = Utility.getAllianceColor() == "red"
-      ? LimelightHelpers.getBotPose3d_wpiRed("limelight-back")
-      : LimelightHelpers.getBotPose3d_wpiBlue("limelight-back");
-      
-    if (limelightMeasurement.tagCount >= 2 && limelightMeasurement.avgTagArea > 0.1) {
-      Pose2d newPose = pose.toPose2d();
-      newPose.rotateBy(Rotation2d.fromDegrees(180));
-      robotContainer.getSubsystems().getDrivetrain().setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-      robotContainer.getSubsystems().getDrivetrain().addVisionMeasurement(
-        newPose,
-        limelightMeasurement.timestampSeconds
-      );
-      robotContainer.getSubsystems().getDrivetrain().seedFieldRelative(newPose);
-    }
+    robotContainer.getSubsystems().updatePosition(PeriodType.TELEOP);
   }
 
   @Override

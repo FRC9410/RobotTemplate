@@ -1,8 +1,15 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import frc.robot.utils.Utility;
+import frc.robot.utils.LimelightHelpers;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Vision extends SubsystemBase {
     public final String GAME_PIECE_TABLE_NAME = "limelight-game-piece";
@@ -52,6 +59,20 @@ public class Vision extends SubsystemBase {
   
     public int getPipeline(VisionType type) {
         return (int) getTable(type).getEntry("getpipe").getDouble(-1);
+    }
+
+    public Map<String, Object> getPoseEstimate (String allianceColor) {
+        LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiRed(TARGETING_TABLE_NAME);
+        Pose3d pose = allianceColor == "red"
+            ? LimelightHelpers.getBotPose3d_wpiRed(TARGETING_TABLE_NAME)
+            : LimelightHelpers.getBotPose3d_wpiBlue(TARGETING_TABLE_NAME);
+        if (limelightMeasurement.tagCount >= 2 && limelightMeasurement.avgTagArea > 0.2) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("pose", pose);
+            result.put("timestamp", limelightMeasurement.timestampSeconds);
+            return result;
+        }
+        return null;
     }
 
     private NetworkTable getTable(VisionType type) {
