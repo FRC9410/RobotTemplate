@@ -11,7 +11,7 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "0,0": {
+          "5,7": {
             "size": [
               2,
               1
@@ -24,7 +24,7 @@
               "_showGlyph": false
             }
           },
-          "15,0": {
+          "15,7": {
             "size": [
               2,
               1
@@ -35,6 +35,41 @@
               "_title": "Dashboard Development Mode",
               "_glyph": 148,
               "_showGlyph": false
+            }
+          },
+          "0,0": {
+            "size": [
+              5,
+              8
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_title": "Camera Stream",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Crosshair/Show crosshair": false,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "QUARTER_CW",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "5,0": {
+            "size": [
+              12,
+              7
+            ],
+            "content": {
+              "_type": "Field",
+              "_title": "Field",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Game/Game": "k2024Crescendo",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false
             }
           }
         }
@@ -249,6 +284,26 @@
               "_title": "Update PID Values",
               "_glyph": 148,
               "_showGlyph": false
+            }
+          },
+          "0,3": {
+            "size": [
+              9,
+              5
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///Test Subystem/Encoder Position",
+              "_title": "Graph",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Graph/Visible time": 30.0,
+              "Graph/X-axis auto scrolling": true,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
+              "Y-axis/Unit": "ul",
+              "Visible data/Test Subystem/Encoder Position": true
             }
           }
         }
