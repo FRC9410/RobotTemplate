@@ -87,7 +87,7 @@
                   "Range/Max": 15.0,
                   "Range/Center": 0.0,
                   "Visuals/Orientation": "HORIZONTAL",
-                  "Visuals/Number of tick marks": 5
+                  "Visuals/Number of tick marks": 6
                 },
                 {
                   "_type": "Simple Dial",
@@ -138,7 +138,7 @@
                   "Range/Max": 15.0,
                   "Range/Center": 0.0,
                   "Visuals/Orientation": "HORIZONTAL",
-                  "Visuals/Number of tick marks": 5
+                  "Visuals/Number of tick marks": 6
                 },
                 {
                   "_type": "Simple Dial",
