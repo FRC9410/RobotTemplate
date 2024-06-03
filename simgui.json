@@ -1,7 +1,24 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "SPARK MAX [11]": {
+        "header": {
+          "open": true
+        }
+      },
+      "SPARK MAX [12]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Custom Tab/Autonomous Mode": "String Chooser",
+      "/Shuffleboard/Dashboard/Autonomous Mode": "String Chooser",
+      "/SmartDashboard/Auto Chooser": "String Chooser"
     }
   },
   "NetworkTables Info": {

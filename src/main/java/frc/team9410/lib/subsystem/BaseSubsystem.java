@@ -1,9 +1,7 @@
 package frc.team9410.lib.subsystem;
 
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -17,15 +15,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseSubsystem extends SubsystemBase {
+    protected boolean devMode;
     private List<TalonFX> talonFxs;
     private List<CANSparkMax> sparkMaxes;
-    NetworkTableInstance inst;
-    NetworkTable subsystemTable;
+    protected NetworkTableInstance inst;
+    protected NetworkTable subsystemTable;
+    protected NetworkTable subsystemPidControllerTable;
+    protected NetworkTable dashboardTable;
 
     public BaseSubsystem() {
         talonFxs = new ArrayList<>();
         sparkMaxes = new ArrayList<>();
         inst = NetworkTableInstance.getDefault();
+        dashboardTable = inst.getTable("Dashboard");
+        devMode = false;
     }
 
     // Method to add a TalonFx motor controller
@@ -90,6 +93,7 @@ public class BaseSubsystem extends SubsystemBase {
 
     public void createSubsystemTable(String name) {
         subsystemTable = inst.getTable(name);
+        subsystemPidControllerTable = inst.getTable(name + " PID Controller");
     }
 
     public void addSparkMaxLogging(CANSparkMax motorController) {
@@ -98,10 +102,17 @@ public class BaseSubsystem extends SubsystemBase {
         subsystemTable.getEntry(deviceName + ": Output Current").setDouble(motorController.getOutputCurrent());
         subsystemTable.getEntry(deviceName + ": Output Voltage").setDouble(motorController.getAppliedOutput());
         subsystemTable.getEntry(deviceName + ": Motor Temperature").setDouble(motorController.getMotorTemperature());
+        subsystemTable.getEntry("Development Mode").setBoolean(devMode);
+    }
+
+    public void setDevMode(boolean devMode) {
+        this.devMode = devMode;
     }
 
     @Override
     public void periodic() {
+        setDevMode(dashboardTable.getEntry("Development Mode").getBoolean(false));
+
         for (CANSparkMax motorController : sparkMaxes) {
             addSparkMaxLogging(motorController);
         }

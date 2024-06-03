@@ -2,16 +2,10 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import frc.robot.subsystems.Subsystems;
 import frc.robot.commands.base.DefaultDriveCommand;
@@ -21,15 +15,12 @@ public class RobotContainer {
   private final CommandXboxController copilotController = new CommandXboxController(1);
   private Subsystems subsystems = new Subsystems();
   // private final Telemetry logger = new Telemetry(DriveConstants.MaxSpeed);
-  private final SendableChooser<Command> autoChooser;
+  private boolean devMode = false;
 
   public RobotContainer() {
     // subsystems.getDrivetrain().registerTelemetry(logger::telemeterize);
-    registerNamedCommands();
     configurePilotBindings();
     configureCopilotBindings();
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   private void configurePilotBindings() {
@@ -59,20 +50,7 @@ public class RobotContainer {
     return this.subsystems;
   }
 
-  public Command getAutonomousCommand() {
-    /* First put the drivetrain into auto run mode, then run the auto */
-    return autoChooser.getSelected();
-  }
-
-  public Command getAutoPath(String pathName) {
-      return this.subsystems.getDrivetrain().getAutoPath(pathName);
-  }
-
   public CommandXboxController getDriverController() {
     return driverController;
-  }
-
-  public void registerNamedCommands() {
-    // NamedCommands.registerCommand("TestCommand", new TestCommand(subsystems));
   }
 }

@@ -1,9 +1,9 @@
 {
   "tabPane": [
     {
-      "title": "SmartDashboard",
-      "autoPopulate": true,
-      "autoPopulatePrefix": "SmartDashboard/",
+      "title": "Dashboard",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
       "widgetPane": {
         "gridSize": 128.0,
         "showGrid": true,
@@ -13,13 +13,26 @@
         "tiles": {
           "0,0": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Auto Chooser",
-              "_title": "Auto Chooser",
+              "_title": "Autonomous Chooser",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "15,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///Dashboard/Development Mode",
+              "_title": "Dashboard Development Mode",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -32,20 +45,20 @@
       "autoPopulate": false,
       "autoPopulatePrefix": "",
       "widgetPane": {
-        "gridSize": 64.0,
+        "gridSize": 128.0,
         "showGrid": false,
         "hgap": 16.0,
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "3,0": {
+          "5,0": {
             "size": [
-              4,
-              6
+              2,
+              3
             ],
             "content": {
               "_type": "List Layout",
-              "_title": "CAN PID 11",
+              "_title": "CAN ID 11",
               "_glyph": 149,
               "_showGlyph": false,
               "Layout/Label position": "TOP",
@@ -65,16 +78,21 @@
                   "_showGlyph": false
                 },
                 {
-                  "_type": "Text View",
+                  "_type": "Voltage View",
                   "_source0": "network_table:///Test Subystem/CAN ID 11: Output Voltage",
-                  "_title": "Output Voltage",
+                  "_title": "Voltage",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": 0.0,
+                  "Range/Max": 15.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Orientation": "HORIZONTAL",
+                  "Visuals/Number of tick marks": 5
                 },
                 {
                   "_type": "Simple Dial",
                   "_source0": "network_table:///Test Subystem/CAN ID 11: Motor Temperature",
-                  "_title": "Motor Temperature",
+                  "_title": "Temperature",
                   "_glyph": 148,
                   "_showGlyph": false,
                   "Range/Min": 0.0,
@@ -86,8 +104,8 @@
           },
           "7,0": {
             "size": [
-              4,
-              6
+              2,
+              3
             ],
             "content": {
               "_type": "List Layout",
@@ -111,16 +129,21 @@
                   "_showGlyph": false
                 },
                 {
-                  "_type": "Text View",
+                  "_type": "Voltage View",
                   "_source0": "network_table:///Test Subystem/CAN ID 12: Output Voltage",
-                  "_title": "Output Voltage",
+                  "_title": "Voltage",
                   "_glyph": 148,
-                  "_showGlyph": false
+                  "_showGlyph": false,
+                  "Range/Min": 0.0,
+                  "Range/Max": 15.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Orientation": "HORIZONTAL",
+                  "Visuals/Number of tick marks": 5
                 },
                 {
                   "_type": "Simple Dial",
                   "_source0": "network_table:///Test Subystem/CAN ID 12: Motor Temperature",
-                  "_title": "Motor Temperature",
+                  "_title": "Temperature",
                   "_glyph": 148,
                   "_showGlyph": false,
                   "Range/Min": 0.0,
@@ -130,17 +153,32 @@
               ]
             }
           },
+          "15,0": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///Test Subystem/Development Mode",
+              "_title": "Development Mode",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
           "0,0": {
             "size": [
-              3,
-              6
+              2,
+              2
             ],
             "content": {
               "_type": "List Layout",
               "_title": "PID Controller",
               "_glyph": 149,
               "_showGlyph": false,
-              "Layout/Label position": "TOP",
+              "Layout/Label position": "LEFT",
               "_children": [
                 {
                   "_type": "Text View",
@@ -185,6 +223,32 @@
                   "_showGlyph": false
                 }
               ]
+            }
+          },
+          "2,0": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Network Table Tree",
+              "_source0": "network_table:///Test Subystem PID Controller",
+              "_title": "Test Subystem PID Controller",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///Test Subystem/Update",
+              "_title": "Update PID Values",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           }
         }
