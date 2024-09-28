@@ -4,9 +4,11 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.TunerConstants;
-import frc.robot.utils.Utility;
+import frc.team9410.lib.LimelightHelpers;
 
 import java.util.Map;
 
@@ -16,19 +18,25 @@ public class Subsystems {
     private Leds leds;
     private Music music;
     private Vision vision;
+    private RobotState robotState;
     private Test test;
 
-    public Subsystems() {
+    public Subsystems(CommandXboxController controller) {
         this.drivetrain = TunerConstants.DriveTrain;
         this.leds = new Leds();
         this.music = new Music(this.drivetrain);
         this.vision = new Vision();
+        this.robotState = new RobotState(this.drivetrain, this.vision, controller);
 
         this.test = new Test();
     }
 
     public CommandSwerveDrivetrain getDrivetrain() {
         return drivetrain;
+    }
+
+    public RobotState getRobotState() {
+        return robotState;
     }
 
     public Leds getLeds() {
@@ -55,23 +63,17 @@ public class Subsystems {
 
     }
 
-    public void updatePosition(PeriodType periodType) {
-        String allianceColor = periodType == PeriodType.AUTO || Utility.getAllianceColor() == "blue" ? "blue" : "red";
-        Map<String, Object> poseWitTimeEstimate = vision.getPoseEstimate(allianceColor);
+    public void updatePosition() {
+        Map<String, Object> poseWitTimeEstimate = vision.getPoseEstimate(drivetrain.getPose().getRotation().getDegrees());
         if (poseWitTimeEstimate != null) {
-            Pose3d pose = (Pose3d) poseWitTimeEstimate.get("pose");
-            Pose2d newPose = pose.toPose2d();
-            newPose.rotateBy(Rotation2d.fromDegrees(180));
+            Pose2d pose = (Pose2d) poseWitTimeEstimate.get("pose");
+            pose.rotateBy(Rotation2d.fromDegrees(180));
             drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
             drivetrain.addVisionMeasurement(
-                newPose,
+                pose,
                 (double) poseWitTimeEstimate.get("timestamp")
             );
-            drivetrain.seedFieldRelative(newPose);
+            drivetrain.seedFieldRelative(pose);
         }
-    }
-
-    public enum PeriodType {
-        AUTO, TELEOP
     }
 }

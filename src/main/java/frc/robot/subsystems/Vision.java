@@ -1,30 +1,31 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.utils.Utility;
-import frc.robot.utils.LimelightHelpers;
+import frc.team9410.lib.LimelightHelpers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class Vision extends SubsystemBase {
     public final String GAME_PIECE_TABLE_NAME = "limelight-game-piece";
-    public final String TARGETING_TABLE_NAME = "limelight-targeting";
+    public final String TAG_TABLE_NAME = "limelight-targeting";
 
     public NetworkTable gamePieceTable;
-    public NetworkTable targetingTable;
+    public NetworkTable tagTable;
 
     /** Creates a new Vision. */
     public Vision() {
         gamePieceTable = NetworkTableInstance.getDefault().getTable(GAME_PIECE_TABLE_NAME);
         gamePieceTable.getEntry("ledMode").setNumber(1);
 
-        targetingTable = NetworkTableInstance.getDefault().getTable(TARGETING_TABLE_NAME);
-        targetingTable.getEntry("ledMode").setNumber(1);
+        tagTable = NetworkTableInstance.getDefault().getTable(TAG_TABLE_NAME);
+        tagTable.getEntry("ledMode").setNumber(1);
     }
 
     @Override
@@ -61,32 +62,38 @@ public class Vision extends SubsystemBase {
         return (int) getTable(type).getEntry("getpipe").getDouble(-1);
     }
 
-    public Map<String, Object> getPoseEstimate (String allianceColor) {
-        LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiRed(TARGETING_TABLE_NAME);
-        Pose3d pose = allianceColor == "red"
-            ? LimelightHelpers.getBotPose3d_wpiRed(TARGETING_TABLE_NAME)
-            : LimelightHelpers.getBotPose3d_wpiBlue(TARGETING_TABLE_NAME);
-        if (limelightMeasurement.tagCount >= 2 && limelightMeasurement.avgTagArea > 0.2) {
+    public Map<String, Object> getPoseEstimate (double yaw) {
+        LimelightHelpers.SetRobotOrientation(TAG_TABLE_NAME, yaw, 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(TAG_TABLE_NAME);
+        if(limelightMeasurement == null) {
+            return null;
+        }
+        Pose2d pose = limelightMeasurement.pose;
             Map<String, Object> result = new HashMap<>();
             result.put("pose", pose);
             result.put("timestamp", limelightMeasurement.timestampSeconds);
             return result;
+    }
+
+    public Optional<Rotation2d> getGamePieceRotation() {
+        if(!hasTarget(VisionType.GAME_PIECE)) {
+            return Optional.empty();
         }
-        return null;
+        return Optional.of(Rotation2d.fromDegrees(getTx(VisionType.GAME_PIECE)));
     }
 
     private NetworkTable getTable(VisionType type) {
         switch (type) {
             case GAME_PIECE:
                 return gamePieceTable;
-            case TARGET:
-                return targetingTable;
+            case TAG:
+                return tagTable;
             default:
                 return null;
         }
     }
 
     public enum VisionType {
-        GAME_PIECE, TARGET
+        GAME_PIECE, TAG
     }
 }

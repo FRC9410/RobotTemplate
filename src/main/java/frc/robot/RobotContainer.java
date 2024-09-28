@@ -13,7 +13,7 @@ import frc.robot.commands.base.DefaultDriveCommand;
 public class RobotContainer {
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController copilotController = new CommandXboxController(1);
-  private Subsystems subsystems = new Subsystems();
+  private Subsystems subsystems = new Subsystems(driverController);
   // private final Telemetry logger = new Telemetry(DriveConstants.MaxSpeed);
   private boolean devMode = false;
 
@@ -32,7 +32,8 @@ public class RobotContainer {
     subsystems.getDrivetrain().setDefaultCommand(
       new DefaultDriveCommand(
         subsystems.getDrivetrain(),
-        driverController));
+        driverController,
+        subsystems.getRobotState()));
   }
   
   private void configureCopilotBindings() {

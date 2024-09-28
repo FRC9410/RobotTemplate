@@ -28,6 +28,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -36,6 +37,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.TunerConstants;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -63,6 +65,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.SysIdSwerveTranslation TranslationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveRotation RotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
     private final SwerveRequest.SysIdSwerveSteerGains SteerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
+    private Optional<Rotation2d> targetRotation = Optional.empty();
     
     /* Use one of these sysidroutines for your particular test */
     private SysIdRoutine SysIdRoutineTranslation = new SysIdRoutine(
@@ -124,6 +127,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public CommandSwerveDrivetrain(
         SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
     this(driveTrainConstants, 0, modules);
+    PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     // configurePathPlanner();
     }
 
@@ -140,6 +144,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         double velocityYMetersPerSecond,
         double rotationRateRadiansPerSecond,
         DriveMode mode) {
+        this.targetRotation = Optional.empty();
 
         switch (mode) {
             case ROBOT_RELATIVE:
@@ -157,6 +162,31 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                         .withVelocityX(-velocityXMetersPerSecond)
                         .withVelocityY(-velocityYMetersPerSecond)
                         .withRotationalRate(-rotationRateRadiansPerSecond));
+            break;
+        }
+    }
+
+    public void drive(
+        double velocityXMetersPerSecond,
+        double velocityYMetersPerSecond,
+        Optional<Rotation2d> rotationOverride,
+        DriveMode mode) {
+        this.targetRotation = rotationOverride;
+
+        switch (mode) {
+            case ROBOT_RELATIVE:
+            applyRequest(
+                () ->
+                    robotRelative
+                        .withVelocityX(-velocityXMetersPerSecond)
+                        .withVelocityY(-velocityYMetersPerSecond));
+            break;
+            case FIELD_RELATIVE:
+            applyRequest(
+                () ->
+                    fieldRelative
+                        .withVelocityX(-velocityXMetersPerSecond)
+                        .withVelocityY(-velocityYMetersPerSecond));
             break;
         }
     }
@@ -240,43 +270,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         ChassisSpeeds chassisSpeeds = getKinematics().toChassisSpeeds(getModuleStates());
         return chassisSpeeds;
     }
-
-    public double getTargetLockRotation(double tx, double offset) {
-        // Increase kP based on horizontal velocity to reduce lag
-        double vy = getChassisSpeeds().vyMetersPerSecond; // Horizontal velocity
-        double kp = DriveConstants.rotationKP;
-        kp *= Math.max(1, vy * 1.5);
-        rotationPidController.setP(kp);
-
-        double rotation = rotationPidController.calculate(tx + offset, 0);
-        return rotation;
-    }
-
-    public double getRotationLockRotation(double error, double offset) {
-        // Increase kP based on horizontal velocity to reduce lag
-        double offsetError = error + offset;
-        if(offsetError > 180) {
-            offsetError -= 360;
-        }
-        double vy = getChassisSpeeds().vyMetersPerSecond; // Horizontal velocity
-        double kp = DriveConstants.rotationKP;
-        kp *= Math.max(1, vy * 1.5);
-        rotationPidController.setP(kp);
-
-        double rotation = rotationPidController.calculate(offsetError, 0);
-        return rotation;
-    }
-
-    public double getTargetLockForward(double ty, double offset) {
-        double forward = -forwardPidController.calculate(0, ty + offset);
-        double output = forward + Math.copySign(DriveConstants.targetLockKFF, forward);
-        return output;
-    }
-
-    public double getTargetLockStrafe(double tx, double offset) {
-        double strafe = -strafePidController.calculate(0, tx + offset);
-        double output = strafe + Math.copySign(DriveConstants.targetLockKFF, strafe);
-        return output;
+    
+    public Optional<Rotation2d> getRotationTargetOverride(){
+        return targetRotation;
     }
 
     private void configurePathPlanner() {
